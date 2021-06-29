@@ -1,5 +1,14 @@
 <script lang="ts">
-  export let tool;
+  type Tool = {
+    id: number;
+    title: string;
+    link: string;
+    description: string;
+    tags: Array<string>;
+  };
+
+  export let tool: Tool;
+  export let disabled: boolean = false;
 </script>
 
 <div id="container">
@@ -7,7 +16,7 @@
     <a target="_blank" href={tool.link}>
       {tool.title}
     </a>
-    <button on:click> remove </button>
+    <button on:click {disabled}> remove </button>
   </div>
   <p>{tool.description}</p>
 

@@ -1,33 +1,25 @@
 <script lang="ts">
-  import Card from "./components/Card.svelte";
+  import Tools from "./components/Tools.svelte";
+  import Modal from "./components/Modal.svelte";
+
+  type Button = {
+    type?: "primary" | "secondary" | "link";
+    text: string;
+  };
 
   let isChecked: boolean = false;
   let isTagOnly: boolean = false;
   let isModalActive: boolean = false;
 
-  let search: string = "";
-
-  const getTools = async () => {
-    let data = await fetch("https://vuttr-domingues.herokuapp.com/api/tools");
-    let res = await data.json();
-
-    if (data.ok) {
-      return res.data;
-    } else {
-      console.log(res.data);
-      throw new Error("Error");
-    }
+  let title = "+ Add";
+  let primaryBtn: Button = {
+    text: "Add",
   };
 
-  let tools = getTools();
+  let search: string = "";
 
   const handleSearch = (search: string) => {
     //
-  };
-
-  const handleDeleteTool = async ({ id }: { id: number }) => {
-    // let data = await fetch();
-    // let res = await data.json();
   };
 </script>
 
@@ -62,18 +54,15 @@
     <button on:click={() => (isModalActive = true)}>+ Add</button>
   </nav>
 
-  {#await tools}
-    <p>Loading...</p>
-  {:then data}
-    {#each data as tool}
-      <Card {tool} on:click={() => handleDeleteTool(tool)} />
-    {/each}
-  {:catch error}
-    <p style="color: red">{error.message}</p>
-  {/await}
+  <Tools />
 
   {#if isModalActive}
-    <!-- Modal -->
+    <Modal
+      {primaryBtn}
+      {title}
+      on:closeModal={() => (isModalActive = false)}
+      size={600}
+    />
   {/if}
 </main>
 
@@ -204,7 +193,7 @@
     nav div #search-container {
       display: flex;
       flex-direction: row;
-      flex-basis: 50px !important;
+      flex-basis: 50px;
     }
   }
 
@@ -223,18 +212,14 @@
     }
 
     nav div #search-container {
-      flex: 1 1 140px;
-    }
-
-    nav div #search-container input {
-      flex-basis: 50px;
+      flex: 1 1 50px;
     }
   }
 
   /* Medium devices (tablets, 768px and up) */
   @media (min-width: 768px) {
     main {
-      padding: 100px 50px;
+      padding: 100px 100px;
     }
 
     nav {
@@ -243,14 +228,14 @@
 
     nav div {
       flex-direction: row;
-      flex-basis: 200px;
+      flex: 1 1 20px;
     }
   }
 
   /* Large devices (desktops, 992px and up) */
   @media (min-width: 992px) {
     main {
-      padding: 100px 100px;
+      padding: 100px 200px;
     }
 
     nav div {
@@ -266,6 +251,9 @@
 
     nav div {
       flex-basis: 400px;
+    }
+    nav div #search-container {
+      flex: 1 1 400px;
     }
   }
 </style>
