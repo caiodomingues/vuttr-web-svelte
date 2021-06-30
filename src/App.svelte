@@ -2,24 +2,22 @@
   import Tools from "./components/Tools.svelte";
   import Modal from "./components/Modal.svelte";
 
-  type Button = {
-    type?: "primary" | "secondary" | "link";
-    text: string;
-  };
+  let isChecked = false;
+  let isTagOnly = false;
+  let isModalActive = false;
 
-  let isChecked: boolean = false;
-  let isTagOnly: boolean = false;
-  let isModalActive: boolean = false;
+  let icon = "plus";
+  let title = "Add new tool";
+  let primaryBtnText = "Add tool";
 
-  let title = "+ Add";
-  let primaryBtn: Button = {
-    text: "Add",
-  };
-
-  let search: string = "";
+  let search = "";
 
   const handleSearch = (search: string) => {
     //
+  };
+
+  const handleAddTool = () => {
+    console.log("submited");
   };
 </script>
 
@@ -58,11 +56,14 @@
 
   {#if isModalActive}
     <Modal
-      {primaryBtn}
+      {icon}
+      {primaryBtnText}
       {title}
-      on:closeModal={() => (isModalActive = false)}
-      size={600}
-    />
+      on:close={() => (isModalActive = false)}
+      on:primaryBtn ={handleAddTool}
+    >
+      <h1>Hello, world!</h1>
+    </Modal>
   {/if}
 </main>
 

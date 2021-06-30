@@ -1,4 +1,6 @@
 <script lang="ts">
+  import IconClose from "../assets/img/icon-close.svelte";
+
   type Tool = {
     id: number;
     title: string;
@@ -8,7 +10,13 @@
   };
 
   export let tool: Tool;
-  export let disabled: boolean = false;
+  export let disabled = false;
+
+  let props = {
+    width: "10px",
+    height: "10px",
+    style: "align-self: center; margin-right: 6px;",
+  };
 </script>
 
 <div id="container">
@@ -16,7 +24,10 @@
     <a target="_blank" href={tool.link}>
       {tool.title}
     </a>
-    <button on:click {disabled}> remove </button>
+    <button on:click {disabled}>
+      <IconClose {props} />
+      remove
+    </button>
   </div>
   <p>{tool.description}</p>
 
@@ -55,7 +66,7 @@
     color: #f95e5a;
     background-color: inherit;
     border: none;
-
+    padding: 0;
     cursor: pointer;
   }
 
