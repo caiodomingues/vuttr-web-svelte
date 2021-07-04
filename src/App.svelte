@@ -37,7 +37,7 @@
   const handleAddTool = async (evt: CustomEvent) => {
     evt.preventDefault();
 
-    let data = await fetch(`http://localhost:8000/api/tools`, {
+    let data = await fetch(`https://vuttr-domingues.herokuapp.com/api/tools`, {
       method: "POST",
       headers: {
         Accept: "application/json",

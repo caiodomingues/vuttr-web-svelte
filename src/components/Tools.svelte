@@ -23,7 +23,7 @@
   export let allTools: Promise<Tool[]>;
 
   export const getTools = async (): Promise<Tool[]> => {
-    let data = await fetch("http://localhost:8000/api/tools");
+    let data = await fetch("https://vuttr-domingues.herokuapp.com/api/tools");
     let res = await data.json();
 
     if (data.ok) {
@@ -40,7 +40,7 @@
 
   const handleRemoveTool = async () => {
     let data = await fetch(
-      `http://localhost:8000/api/tools/${selectedTool.id}`,
+      `https://vuttr-domingues.herokuapp.com/api/tools/${selectedTool.id}`,
       {
         method: "DELETE",
       }
