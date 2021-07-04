@@ -2,7 +2,14 @@
   import Tools from "./components/Tools.svelte";
   import Modal from "./components/Modal.svelte";
 
-  let isChecked = false;
+  type Tool = {
+    id: number;
+    title: string;
+    link: string;
+    description: string;
+    tags: Array<string>;
+  };
+
   let isTagOnly = false;
   let isModalActive = false;
 
@@ -12,12 +19,54 @@
 
   let search = "";
 
-  const handleSearch = (search: string) => {
-    //
+  let name = "";
+  let link = "";
+  let description = "";
+  let tags = "";
+  let errorTag = "";
+
+  let tools: { getTools: () => Promise<Tool[]> };
+  let allTools: Promise<Tool[]>;
+
+  const handleSearch = async () => {
+    // Haven't done yet, because the way I treated componentization and reactivity at this app doesn't help me,
+    // it would be better if I passed Tools data through the child, like this:
+    // <Tools {tools} />
   };
 
-  const handleAddTool = () => {
-    console.log("submited");
+  const handleAddTool = async (evt: CustomEvent) => {
+    evt.preventDefault();
+
+    let data = await fetch(`http://localhost:8000/api/tools`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        title: name,
+        link,
+        description,
+        tags: tags.split(" "),
+      }),
+    });
+    let res = await data.json();
+
+    if (data.ok) {
+      allTools = tools.getTools();
+      isModalActive = false;
+      name = "";
+      link = "";
+      description = "";
+      tags = "";
+      errorTag = "";
+    } else {
+      if (res.message_raw.slice(0, 13) === "Tag not found") {
+        errorTag = res.message_raw;
+      }
+
+      throw new Error(res.message);
+    }
   };
 </script>
 
@@ -32,7 +81,7 @@
           name="Search"
           id="search"
           placeholder="Digite o que está procurando..."
-          on:change={() => handleSearch(search)}
+          on:input={handleSearch}
           bind:value={search}
         />
       </div>
@@ -42,8 +91,8 @@
             type="checkbox"
             name="Tag only"
             id="tag-only"
-            bind:checked={isChecked}
-            on:change={() => (isTagOnly = !isTagOnly)}
+            bind:checked={isTagOnly}
+            on:input={handleSearch}
           />
           search in tags only
         </label>
@@ -52,17 +101,80 @@
     <button on:click={() => (isModalActive = true)}>+ Add</button>
   </nav>
 
-  <Tools />
+  <Tools {allTools} bind:this={tools} />
 
   {#if isModalActive}
     <Modal
       {icon}
-      {primaryBtnText}
       {title}
+      {primaryBtnText}
       on:close={() => (isModalActive = false)}
-      on:primaryBtn ={handleAddTool}
+      on:primaryBtn={(evt) => handleAddTool(evt)}
     >
-      <h1>Hello, world!</h1>
+      <form>
+        <div class="input-group">
+          <label for="toolName">
+            Tool name <span class="required">*</span>
+          </label>
+          <input
+            bind:value={name}
+            type="text"
+            name="tool name"
+            id="toolName"
+            required
+            autoComplete="off"
+            minLength={1}
+            maxLength={25}
+          />
+        </div>
+        <div class="input-group">
+          <label for="toolLink">
+            Tool link <span class="required">*</span>
+          </label>
+          <input
+            bind:value={link}
+            type="text"
+            name="tool link"
+            id="toolLink"
+            autoComplete="off"
+            required
+            minLength={1}
+            maxLength={200}
+          />
+        </div>
+        <div class="input-group">
+          <label for="toolName">
+            Tool description <span class="required">*</span>
+          </label>
+          <textarea
+            bind:value={description}
+            rows={4}
+            name="tool description"
+            id="toolDescription"
+            required
+            maxLength={255}
+          />
+        </div>
+        <div class="input-group">
+          <label for="tags">
+            Tags <span class="required">*</span>
+          </label>
+          <input
+            bind:value={tags}
+            type="text"
+            name="tags"
+            id="tags"
+            class:inputError={errorTag}
+            autoComplete="off"
+            required
+            minLength={1}
+            maxLength={255}
+          />
+          {#if errorTag}
+            <p class="error">{errorTag}</p>
+          {/if}
+        </div>
+      </form>
     </Modal>
   {/if}
 </main>
@@ -170,6 +282,57 @@
     border: 1px solid #ebeaed;
     border-radius: 5px;
     padding: 13px 25px;
+  }
+
+  form label {
+    color: #170c3a;
+    font-style: normal;
+    font-weight: 600;
+    font-family: "Source Sans Pro", sans-serif;
+  }
+
+  form input {
+    background: #f5f4f6 0% 0% no-repeat padding-box;
+    border: 1px solid #ebeaed;
+    border-radius: 5px;
+    padding: 13px 22px;
+
+    font: normal normal normal 16px/20px "Source Sans Pro";
+    letter-spacing: 0px;
+    color: #170c3a;
+  }
+
+  form textarea {
+    background: #f5f4f6 0% 0% no-repeat padding-box;
+    border: 1px solid #ebeaed;
+    border-radius: 5px;
+    resize: none;
+    padding: 11px 21px;
+
+    font: normal normal normal 16px/20px "Source Sans Pro";
+    letter-spacing: 0px;
+    color: #170c3a;
+  }
+
+  form .input-group {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 30px;
+    margin-bottom: 24px;
+  }
+
+  form .error {
+    text-align: right;
+    font: normal normal normal 16px/20px "Source Sans Pro";
+    letter-spacing: 0.36px;
+    color: #f95e5a;
+  }
+
+  form .inputError {
+    background: #feefee 0% 0% no-repeat padding-box;
+    border: 1px solid #f95e5a;
+    color: #f95e5a;
+    border-radius: 5px;
   }
 
   /* Extra small devices */

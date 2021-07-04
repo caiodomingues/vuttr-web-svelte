@@ -63,8 +63,10 @@
     {/if}
 
     {#if secondaryBtnType && secondaryBtnText}
-      <button on:click={secondaryBtnAction} class={secondaryBtnType}
-        >{secondaryBtnText}</button
+      <button
+        type="submit"
+        on:click={secondaryBtnAction}
+        class={secondaryBtnType}>{secondaryBtnText}</button
       >
     {/if}
   </div>

@@ -20,7 +20,9 @@
   let primaryBtnType = "danger";
   let secondaryBtnText = "Cancel";
 
-  const getTools = async (): Promise<Tool[]> => {
+  export let allTools: Promise<Tool[]>;
+
+  export const getTools = async (): Promise<Tool[]> => {
     let data = await fetch("http://localhost:8000/api/tools");
     let res = await data.json();
 
@@ -44,9 +46,9 @@
       }
     );
 
-    isModalActive = false;
     if (data.ok) {
-      return allTools;
+      isModalActive = false;
+      allTools = getTools();
     } else {
       throw new Error("Error");
     }
